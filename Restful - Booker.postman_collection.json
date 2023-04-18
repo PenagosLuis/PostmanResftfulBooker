@@ -1,0 +1,345 @@
+{
+	"info": {
+		"_postman_id": "feae52ef-3d69-4091-aee7-fb0db761506c",
+		"name": "Restful - Booker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25732124"
+	},
+	"item": [
+		{
+			"name": "Getting Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test (\"Debería tener status 200\", () => {",
+							"    pm.response.to.have.status(200);",
+							"    })",
+							"pm.test(\"Debería retornar una key valida en formato string\", () => {",
+							"    const token = pm.response.json().token;",
+							"    pm.expect(typeof(token)).to.eq('string')",
+							"})",
+							"",
+							"const jsonData = pm.response.json();",
+							"const token = jsonData.token;",
+							"pm.environment.set(\"API-KEY\", token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\" : \"admin\",\n    \"password\" : \"password123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/auth",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Book",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var min1 = 50.0; ",
+							"var max1 = 250.0; ",
+							"var randomNumber1 = (Math.random() * (max1 - min1) + min1).toFixed(2);",
+							"pm.environment.set(\"randomNumber1\", randomNumber1);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseJson = pm.response.json();",
+							"",
+							"pm.test (\"Verifica que retorna status 201 CREATED\", () => {",
+							"    pm.response.to.have.status(201);",
+							"    })",
+							"pm.test(\"Verifica que retorna una key llamada 'bookingid' en formato número\", () => {",
+							"        pm.expect(typeof(responseJson.bookingid)).to.eq('number')",
+							"    })",
+							"pm.test(\"Verifica que retorna una key llamada 'booking' como un objeto\", () => {",
+							"    const booking = pm.response.json().booking;",
+							"    pm.expect(booking).to.be.an('object');",
+							"});",
+							"pm.test(\"Verifica que retorna una key llamada 'firstname' en formato string\", () => {",
+							"        pm.expect(typeof(responseJson.booking.firstname)).to.eq('string');",
+							"    })",
+							" pm.test(\"Verifica que retorna una key llamada 'lastname' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.booking.lastname)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada  'totalprice' en formato number\", () => {",
+							"       pm.expect(typeof(responseJson.booking.totalprice)).to.eq('number');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada 'depositpaid' en formato boolean\", () => {",
+							"       pm.expect(typeof(responseJson.booking.depositpaid)).to.eq('boolean');",
+							"    })",
+							" pm.test(\"Verifica que  retorna una key llamada  'bookingdates' como un objeto\", () => {",
+							"     const bookingdates = pm.response.json().booking.bookingdates",
+							"       pm.expect(typeof(bookingdates)).to.eq('object');",
+							"    })",
+							" pm.test(\"Verifica que retorna una key llamada 'checkin' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.booking.bookingdates.checkin)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada 'checkout' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.booking.bookingdates.checkout)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada 'additionalneeds' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.booking.additionalneeds)).to.eq('string');",
+							"    })   ",
+							"/* El siguiente código es para establecer como variable de entorno el resultado retornado de ID */",
+							"const bookingId = pm.response.json().bookingid;",
+							"pm.environment.set(\"ID\", bookingId);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\" : \"{{$randomFirstName}}\",\n    \"lastname\" : \"{{$randomLastName}}\",\n    \"totalprice\" : \"{{randomNumber1}}\",\n    \"depositpaid\" : {{$randomBoolean}},\n    \"bookingdates\" : {\n        \"checkin\" : \"{{$randomDateRecent}}\",\n        \"checkout\" : \"{{$randomDateFuture}}\"\n    },\n    \"additionalneeds\" : \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API}}",
+					"host": [
+						"{{API}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseJson = pm.response.json();",
+							"",
+							"pm.test (\"Verifica que retorna status 200 OK\", () => {",
+							"    pm.response.to.have.status(200);",
+							"    })",
+							"pm.test(\"Verifica que retorna una key llamada 'firstname' en formato string\", () => {",
+							"        pm.expect(typeof(responseJson.firstname)).to.eq('string');",
+							"    })",
+							" pm.test(\"Verifica que retorna una key llamada 'lastname' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.lastname)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada  'totalprice' en formato number\", () => {",
+							"       pm.expect(typeof(responseJson.totalprice)).to.eq('number');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada  'depositpaid' en formato boolean\", () => {",
+							"       pm.expect(typeof(responseJson.depositpaid)).to.eq('boolean');",
+							"    })",
+							" pm.test(\"Verifica que  retorna una key llamada 'bookingdates' como un objeto\", () => {",
+							"     const bookingdates = pm.response.json().bookingdates",
+							"       pm.expect(typeof(bookingdates)).to.eq('object');",
+							"    })",
+							" pm.test(\"Verifica que retorna una key llamada 'checkin' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.bookingdates.checkin)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada 'checkout' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.bookingdates.checkout)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada 'additionalneeds' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.additionalneeds)).to.eq('string');",
+							"    })   "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API}}/{{ID}}",
+					"host": [
+						"{{API}}"
+					],
+					"path": [
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseJson = pm.response.json();",
+							"",
+							"pm.test (\"Verifica que retorna status 200 OK\", () => {",
+							"    pm.response.to.have.status(200);",
+							"    })",
+							"pm.test(\"Verifica que retorna una key llamada 'firstname' en formato string\", () => {",
+							"        pm.expect(typeof(responseJson.firstname)).to.eq('string');",
+							"    })",
+							" pm.test(\"Verifica que retorna una key llamada 'lastname' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.lastname)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada  'totalprice' en formato number\", () => {",
+							"       pm.expect(typeof(responseJson.totalprice)).to.eq('number');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada  'depositpaid' en formato boolean\", () => {",
+							"       pm.expect(typeof(responseJson.depositpaid)).to.eq('boolean');",
+							"    })",
+							" pm.test(\"Verifica que  retorna una key llamada 'bookingdates' como un objeto\", () => {",
+							"     const bookingdates = pm.response.json().bookingdates",
+							"       pm.expect(typeof(bookingdates)).to.eq('object');",
+							"    })",
+							" pm.test(\"Verifica que retorna una key llamada 'checkin' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.bookingdates.checkin)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada 'checkout' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.bookingdates.checkout)).to.eq('string');",
+							"    })   ",
+							" pm.test(\"Verifica que retorna una key llamada 'additionalneeds' en formato string\", () => {",
+							"       pm.expect(typeof(responseJson.additionalneeds)).to.eq('string');",
+							"    })   "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{API-KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\" : \"{{$randomFirstName}}\",\n    \"lastname\" : \"{{$randomLastName}}\",\n    \"totalprice\" : \"{{randomNumber1}}\",\n    \"depositpaid\" : {{$randomBoolean}},\n    \"bookingdates\" : {\n        \"checkin\" : \"{{$randomDateRecent}}\",\n        \"checkout\" : \"{{$randomDateFuture}}\"\n    },\n    \"additionalneeds\" : \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API}}/{{ID}}",
+					"host": [
+						"{{API}}"
+					],
+					"path": [
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verificar que el sistema retorna un código de estado 204 \" , () => {",
+							"pm.response.to.have.status(204);",
+							"})",
+							"",
+							"pm.test(\"Verificar que el sistema retorna un código de estado 201 \" , () => {",
+							"pm.response.to.have.status(201);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "token={{API-KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Cookie",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{API}}/{{ID}}",
+					"host": [
+						"{{API}}"
+					],
+					"path": [
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
