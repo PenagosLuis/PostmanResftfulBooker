@@ -1,0 +1,185 @@
+{
+	"info": {
+		"_postman_id": "5ad699bd-3d6e-4fb1-a43a-7ebe31e1d28f",
+		"name": "Open Weather TEST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25732124"
+	},
+	"item": [
+		{
+			"name": "Show Code Status 401",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test (\"Should be status 401\", function () {\r",
+							"pm.response.to.have.status(401);\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API-OPENWEATHER}}/data/2.5/weather?lat=10.95555&lon=10.85458&apid={{API-KEY}}",
+					"host": [
+						"{{API-OPENWEATHER}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "10.95555"
+						},
+						{
+							"key": "lon",
+							"value": "10.85458"
+						},
+						{
+							"key": "apid",
+							"value": "{{API-KEY}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show Code Status 200",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var min1 = -90.0; \r",
+							"var max1 = 90.0; \r",
+							"var randomNumber1 = (Math.random() * (max1 - min1) + min1).toFixed(5);\r",
+							"pm.environment.set(\"randomNumber1\", randomNumber1);\r",
+							"\r",
+							"var min2 = -180.0; \r",
+							"var max2 = 180.0; \r",
+							"var randomNumber2 = (Math.random() * (max2 - min2) + min2).toFixed(5);\r",
+							"pm.environment.set(\"randomNumber2\", randomNumber2);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify that status code is 200 OK.\" , function () {\r",
+							"pm.response.to.have.status(200);\r",
+							"})\r",
+							"pm.test(\"Verify that key coord.lon and coord.lat comes back as number\", function(){\r",
+							"    let coord = pm.response.json().coord;\r",
+							"    pm.expect(typeof(coord.lat)).to.eql('number');\r",
+							"    pm.expect(typeof(coord.lon)).to.eql('number');\r",
+							"});\r",
+							"pm.test(\"Verify that key id comes back as a number, main comes back as a string, description comes back as a string and icon comes back as a string.\", function(){\r",
+							"    let weather = pm.response.json().weather;\r",
+							"    pm.expect(typeof(weather[0].id)).to.eql('number');\r",
+							"    pm.expect(typeof(weather[0].main)).to.eql('string');\r",
+							"    pm.expect(typeof(weather[0].description)).to.eql('string');\r",
+							"    pm.expect(typeof(weather[0].icon)).to.eql('string');\r",
+							"});\r",
+							"pm.test(\"Verify that key base comes back as a string.\", function(){\r",
+							"    let base = pm. response.json().base;\r",
+							"    pm.expect(typeof(base)).to.eql('string');\r",
+							"});\r",
+							"pm.test(\"Verify that all matrix main comes back as a number including keys: temp, feels_like, temp_min, temp_max, pressure, humidity, sea_level, grnd_level.\", function(){\r",
+							"    let main = pm.response.json().main;\r",
+							"    console.log(main.feels_like)\r",
+							"    pm.expect(typeof(main.temp)).to.eql('number');\r",
+							"    pm.expect(typeof(main.feels_like)).to.eql('number');\r",
+							"    pm.expect(typeof(main.temp_min)).to.eql('number');\r",
+							"    pm.expect(typeof(main.temp_max)).to.eql('number');\r",
+							"    pm.expect(typeof(main.pressure)).to.eql('number');\r",
+							"    pm.expect(typeof(main.humidity)).to.eql('number');\r",
+							"    pm.expect(typeof(main.sea_level)).to.eql('number');\r",
+							"    pm.expect(typeof(main.grnd_level)).to.eql('number');\r",
+							"});\r",
+							"pm.test(\"Verify that key visibility comes back as a number.\", function(){\r",
+							"    let visibility = pm. response.json().visibility;\r",
+							"    pm.expect(typeof(visibility)).to.eql('number');\r",
+							"    });\r",
+							"\r",
+							"pm.test(\"Verify that all matrix wind comes back as a number including keys: speed, deg, gust.\", function(){ \r",
+							"    let wind = pm.response.json().wind;\r",
+							"    pm.expect(typeof(wind.speed)).to.eql('number');\r",
+							"    pm.expect(typeof(wind.deg)).to.eql('number');\r",
+							"    pm.expect(typeof(wind.gust)).to.eql('number')\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify that object clouds and key all comes back as a number.\", function(){ \r",
+							"    let clouds = pm.response.json().clouds;\r",
+							"    pm.expect(typeof(clouds.all)).to.eql('number');\r",
+							"});\r",
+							"pm.test(\"Verify that object dt and key all comes back as a number.\", function(){ \r",
+							"    let dt = pm.response.json().dt;\r",
+							"    pm.expect(typeof(dt)).to.eql('number');\r",
+							"});\r",
+							"pm.test(\"Verify that all sys comes back as a number including keys: country,sunrise,sunset.\", function(){ \r",
+							"    let sys = pm.response.json().sys;\r",
+							"    pm.expect(typeof(sys.country)).to.eql('string');\r",
+							"    pm.expect(typeof(sys.sunrise)).to.eql('number');\r",
+							"    pm.expect(typeof(sys.sunset)).to.eql('number')\r",
+							"});\r",
+							"pm.test(\"Verify that object timezone and key all comes back as a number.\", function(){ \r",
+							"    let timezone = pm.response.json().timezone;\r",
+							"    pm.expect(typeof(timezone)).to.eql('number');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API-OPENWEATHER}}/data/2.5/weather?lat={{randomNumber1}}&lon={{randomNumber2}}&appid={{API-KEY}}",
+					"host": [
+						"{{API-OPENWEATHER}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "{{randomNumber1}}"
+						},
+						{
+							"key": "lon",
+							"value": "{{randomNumber2}}"
+						},
+						{
+							"key": "appid",
+							"value": "{{API-KEY}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
